@@ -1,5 +1,4 @@
 package common;
-import localitzacio.*;
 import java.util.*;
 /**
  * @author David Casas
