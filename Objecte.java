@@ -1,4 +1,4 @@
-package common;
+package compartit;
 import java.util.*;
 /**
  * @author David Casas
