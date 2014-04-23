@@ -13,7 +13,7 @@ public class Objecte {
      * Crea un objecte.
      * @param i ID de l'objecte.
      */
-    public Tarea(int i){
+    public Objecte(int i){
         ID = i;
     }
     
