@@ -44,8 +44,8 @@ public class GLB {
         for (int i = 0; i<l.length; ++i) {
             MatriuDistancies[i][i] = 0;
             for (int j = i+1; j<l.length; ++j) {
-                double dist = Math.pow(l[i].posicioX - l[i+1].posicioX, 2);
-                dist += Math.pow(l[i].posicioY - l[i+1].posicioY, 2);
+                double dist = Math.pow(l[i].getPosicioX() - l[i+1].getPosicioX(), 2);
+                dist += Math.pow(l[i].getPosicioY() - l[i+1].getPosicioY(), 2);
                 dist = Math.sqrt(dist);   
                 MatriuDistancies[i][j] = dist;
                 MatriuDistancies[j][i] = dist;
