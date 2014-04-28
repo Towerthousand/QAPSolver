@@ -391,7 +391,7 @@ public class GLB {
         sequenciaZeros.add(zeroNoMarcat);
         boolean paired;
         while (true) {
-            i = asignaCol[j];
+            i = assignaCol[j];
             paired = (i != -1); //comprova que si hi ha un 0 a la mateixa columna
             if (!paired) break;
             sequenciaZeros.add(new int[]{i,j});
