@@ -19,14 +19,12 @@ public class GLB {
     /**
      * 
      * @param af
-     * @param l
+     * @param dist
      * @return 
      */
     
-    public static double calcularFita(double[][] af, Lloc[] l) {
-        // Calcular la matriu de distancies
-        double[][] dist = calcularMatriuDistancies(l);
-        // Aplicar lawler pe calcular matriu de costos
+    public static double calcularFita(double[][] af, double[][] dist) {
+        // Aplicar lawler per calcular matriu de costos
         double[][] lawler = calcularMatriuLawler(af, dist);
         return algoritmeHungar(lawler);
     }
@@ -152,7 +150,6 @@ public class GLB {
             int columna = assignaFil[zeroNoMarcat[0]];
             // comprova si hi ha un zero assignat en la fila del 0 que hem escollit
             if (columna == -1){
-                /////////////////////*FALTA*/////////////////////
                 // incrementem els zeros
                 incrementaConjuntDeZerosAssignats(zeroNoMarcat, assignaFil, assignaCol, escollitFil);
                 //comencem de nou
@@ -160,7 +157,6 @@ public class GLB {
                 Arrays.fill(filMarcades,0);
                 Arrays.fill(colsMarcades,0);
                 marcarColAmbZeros(assignaCol,colsMarcades);
-                /////////////////////*FALTA*/////////////////////
             } else {
 
                 // marquem la fila que conté el zero escollit i desmarquem 
