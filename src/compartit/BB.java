@@ -20,11 +20,11 @@ public class BB {
     /**
      * Retorna el vector d'assignacions
      */
-    public int[] calcularAssignacions(double[][] af, Vector<Lloc> l){
-        int[] assign = new int[l.size()];
+    public int[] calcularAssignacions(double[][] afinitats, double[][] distancies){
+        int[] assign = new int[afinitats.length];
         double cost = 0;
         Stack<Node> s = new Stack();
-        s.push(new Node(new QAP(calcDist(l), af)));
+        s.push(new Node(new QAP(distancies, afinitats)));
         while(!s.empty()){
             Node n = s.pop();
             if(n.fita <= cost ){
@@ -43,6 +43,36 @@ public class BB {
             }
         }
         return assign;
+    }
+    
+    private Branch Branching(Node n, double fita, double[][] S){
+        double[] rowSum = new double[n.size()];
+        double[] colSum = new double[n.size()];
+        for (int i = 0; i < n.size(); i++) {
+            for (int j = 0; j < n.size(); j++) {
+                rowSum[i] += S[i][j];
+                colSum[j] += S[i][j];
+            }
+        }     
+        int rowind = 0, colind = 0;
+        double rowbest = rowSum[0], colbest = colSum[0];
+        for (int i=1; i<n.size(); ++i){
+            if(rowbest < rowSum[i]){
+                rowbest = rowSum[i];
+                rowind = i;
+            }
+            if(colbest < colSum[i]){
+                colbest = colSum[i];
+                colind = i;
+            }
+        }
+        
+        if(rowbest > colbest){
+            return new Branch(true, rowind);
+        }
+        else{
+            return new Branch(false, colind);
+        } 
     }
     
     private class Node{
@@ -80,19 +110,13 @@ public class BB {
         }
     }
     
-    private double[][] calcDist(Vector<Lloc> l){
-        double[][] dist = new double[l.size()][l.size()];
-        for (int i = 0; i<l.size(); ++i){
-            for (int j = i; j<l.size(); ++j){
-                int x = l.elementAt(i).getX() - l.elementAt(j).getX();
-                int y = l.elementAt(i).getY() - l.elementAt(j).getY();
-                double d = x*x + y*y;
-                d = Math.sqrt(d);
-                dist[i][j] = d;
-                dist[j][i] = d;
-            }
+    private class Branch{
+        public Boolean isRowBranch;
+        public int index;
+        public Branch(Boolean b, int i){
+            isRowBranch = b;
+            index = i;
         }
-        return dist; 
     }
     
 }
