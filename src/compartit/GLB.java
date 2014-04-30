@@ -14,6 +14,7 @@ import java.util.*;
 public class GLB {
     //Solucio
     public static double fita;
+    public static double[][] lawler;
 
     
     /**
@@ -25,31 +26,8 @@ public class GLB {
     
     public static double calcularFita(double[][] af, double[][] dist) {
         // Aplicar lawler per calcular matriu de costos
-        double[][] lawler = calcularMatriuLawler(af, dist);
+        calcularMatriuLawler(af, dist);
         return algoritmeHungar(lawler);
-    }
-    
-    /**
-     * 
-     * Retorna la matriu de distancies a partir del vector de llocs de tots
-     * els objectes
-     * 
-     * @param l
-     * @return MatriuDistancies
-     */
-    private static double[][] calcularMatriuDistancies(Lloc[] l) {
-        double[][] MatriuDistancies = new double[l.length][l.length]; 
-        for (int i = 0; i<l.length; ++i) {
-            MatriuDistancies[i][i] = 0;
-            for (int j = i+1; j<l.length; ++j) {
-                double dist = Math.pow(l[i].getPosicioX() - l[i+1].getPosicioX(), 2);
-                dist += Math.pow(l[i].getPosicioY() - l[i+1].getPosicioY(), 2);
-                dist = Math.sqrt(dist);   
-                MatriuDistancies[i][j] = dist;
-                MatriuDistancies[j][i] = dist;
-            }
-        }
-        return MatriuDistancies;
     }
     
     /**
@@ -61,12 +39,11 @@ public class GLB {
      * 
      * @param af
      * @param dist
-     * @return lawler
      */
-    private static double[][] calcularMatriuLawler(double[][] af, double[][] dist) {
+    private static void calcularMatriuLawler(double[][] af, double[][] dist) {
         int n = af[0].length;   //dist té el mateix tamany que af i les dues
                                 // matrius són quadrades
-        double[][] lawler = new double[n][n];
+        lawler = new double[n][n];
         // Calcular matrius afi i distj. Aquestes matrius contindràn 
         // els elements de la matriu af i dist treient les diagonals i ordenant
         // cada fila
@@ -96,7 +73,6 @@ public class GLB {
                 }
             }
         }
-        return lawler;
     }
 
     /**
