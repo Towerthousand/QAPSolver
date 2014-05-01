@@ -33,7 +33,7 @@ public class BB extends SolucionadorQAP{
             if(n.fita <= cost ){
                 cost = n.fita;
                 assign = n.currassign;
-                if (true/*ONLY 3 POSITIONS LEFT TO ASSIGN*/){
+                if (n.isAlmostSolved()){
                     /*BACKTRACK THEM AND PICK BEST*/
                 } else  {
                     Node[] vn = n.Branch(); 
@@ -54,7 +54,7 @@ public class BB extends SolucionadorQAP{
     //y Strong Branching en clases distintas.
     //--------------------------------------------------------
     //Ahora mismo: weak branching
-    protected Branch Branching(Node n){
+    private Branch Branching(Node n){
         return CoreBranching(n);
     }
     
@@ -87,7 +87,7 @@ public class BB extends SolucionadorQAP{
             return new Branch(false, colind);
         } 
     }
-    
+     
     private class Node{
         public QAP qap;
         public double fita;
@@ -100,25 +100,53 @@ public class BB extends SolucionadorQAP{
         public Node(QAP q, int[] v){
             qap = q;
             currassign = v;
-            GLB g = new GLB();
-            fita = g.calcularFita(this.qap.freq, this.qap.dist);
+            //GLB g = new GLB();
+            fita = GLB.calcularFita(this.qap.freq, this.qap.dist);
             //C = g.BLABLABLA Matriu Costes
         }
         public Node[] Branch(){
             Branch b = Branching(this);
-            // HAY QUE HACERLO
-            //REMEMBER TO SORT THEM 
-            //(recommend using a map to place them when finding and then sorting
-            // the keyset. Then getting stuff from map in that order.)
-            return new Node[0];
+            Node[] res = new Node[qap.size()];
+            Map<Double,Node> map = new HashMap<Double,Node>();
+            if (b.isRowBranch)
+                for(int i=0; i<qap.size(); ++i){
+                    Node n = new Node(qap.Reduced(b.index,i), newAssign(currassign,b.index,i));
+                    map.put(n.fita, n);
+                }
+            else
+                for(int i=0; i<qap.size(); ++i){
+                    Node n = new Node(qap.Reduced(i,b.index), newAssign(currassign,i,b.index));
+                    map.put(n.fita, n);
+                }
+            Double[] set = (Double[]) map.keySet().toArray();
+            Arrays.sort(set, Collections.reverseOrder());
+            for(int i=0; i<qap.size(); ++i){
+                res[i] = map.get(set[i]);
+            }
+            return res;
+        }
+        public Boolean isAlmostSolved(){
+            int count = 0;
+            for(int x : currassign) if (x==-1) ++count;
+            return (count<=3);
         }
         
+        private int[] newAssign(int[] v, int i, int j){
+            int[] res = v.clone();
+            for(int k = 0; k<v.length; ++k){
+                if(v[k]!=-1){
+                    if(k<=i) ++i;
+                    if(v[k]<=j) ++j;
+                }
+            }
+            res[i]=j;
+            return res;
+        }
     }
     
     private class QAP{
         public double[][] dist;
         public double[][] freq;
-        public double offset;
         
         public QAP(double[][] distances, double[][] freq){}
         
@@ -127,10 +155,26 @@ public class BB extends SolucionadorQAP{
         }
         
         public double costOf(int[] pos){
-            double res = offset;
+            double res = 0;
             for (int i = 0; i<dist.length; i++){
                 for (int j = 0; j<dist.length; j++){
                     res+=freq[i][j]*dist[pos[i]][pos[j]];
+                }
+            }
+            return res;
+        }
+        
+        public QAP Reduced(int i, int j){
+            double[][] d = Reduce(dist,i,j);
+            double[][] f = Reduce(freq,i,j);
+            return new QAP(d,f);
+        }
+        
+        private double[][] Reduce(double[][] m, int i, int j){
+            double[][] res = new double[m.length-1][m.length-1];
+            for(int ii = 0; ii<res.length; ii++){
+                for(int jj = 0; jj<res[ii].length; jj++){
+                    res[ii][jj] = m[ii < i ? ii : ii + 1][jj < j ? jj : jj + 1];
                 }
             }
             return res;
