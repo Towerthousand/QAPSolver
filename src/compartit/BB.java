@@ -1,33 +1,34 @@
 package compartit;
 import java.util.*;
 /**
- * @author David Casas
+ * Classe que implementa una solució del QAP, mitjançant el
+ * Branch & Bound algorithm.
  * 
+ * @author David Casas
  * Thanks to Nathan Brixius for his QAP explanations.
  */
 public class BB extends SolucionadorQAP{
-    /**
-     * @param 
-     */
-    private double fita;
-    private final GLB glb = new GLB();
-    private QAP qap_init;
-
+    
     public BB(CalcularAfinitats a, CalcularDistancies d) {
         super(a, d);
     }
 
-    /**
-     * Retorna el vector d'assignacions
+ 
+     /**
+     *
+     * @param afinitats Matriu d'afinitats (fluxos).
+     * @param distancies Matriu de distàncies.
+     * @return Retorna el vector d'assignacions "v", on v[i] = j vol dir 
+     * que l'objecte 'i' te assignat el lloc 'j'.
      */
+    @Override
     public int[] calcularAssignacions(double[][] afinitats, double[][] distancies){
-        qap_init = new QAP(distancies, afinitats);
         int[] assign = new int[afinitats.length]; //results
         double cost = Double.POSITIVE_INFINITY; //results.objective
         int[] v = new int[assign.length];
         for(int x : v) x = -1;
         Stack<Node> s = new Stack();
-        s.push(new Node(qap_init, v));
+        s.push(new Node(new QAP(distancies, afinitats), v));
         while(!s.empty()){
             Node n = s.pop();
             if(n.fita <= cost ){
@@ -49,8 +50,7 @@ public class BB extends SolucionadorQAP{
                     }
                     
                 } else  {
-                    Node[] vn = n.Branch(); 
-                    for(Node sn : n.Branch()){
+                    for(Node sn : n.branch()){
                         s.push(sn);
                     }
                 }
@@ -60,7 +60,7 @@ public class BB extends SolucionadorQAP{
     }
     
     private ArrayList<int[]> permutations(int[] a) {
-        ArrayList<int[]> ret = new ArrayList<int[]>();
+        ArrayList<int[]> ret = new ArrayList<>();
         permutation(a, 0, ret);
         return ret;
     }
@@ -81,17 +81,22 @@ public class BB extends SolucionadorQAP{
         arr[i] = arr[j];
         arr[j] = tmp;
     }
-    //IDEA PARA BB1 y BB2
-    //===================
-    //Convertir esta en abstract y implementar Weak Branching
-    //y Strong Branching en clases distintas.
+    
+    //IDEA PARA subclasses
+    //====================
+    //Implementar Strong Branching en una subclase.
     //--------------------------------------------------------
-    //Ahora mismo: weak branching
-    private Branch Branching(Node n){
-        return CoreBranching(n);
+    //En esta clase: weak branching
+    protected Branch branching(Node n){
+        return coreBranching(n);
     }
     
-    private Branch CoreBranching(Node n){
+    /**
+     *
+     * @param n Node actual de l'espai de solucions.
+     * @return Branca per la que es seguirà.
+     */
+    protected Branch coreBranching(Node n){
         double[] rowSum = new double[n.C.length];
         double[] colSum = new double[n.C.length];
         for (int i = 0; i < n.C.length; i++) {
@@ -121,7 +126,7 @@ public class BB extends SolucionadorQAP{
         } 
     }
      
-    private class Node{
+    protected class Node{
         public QAP qap;
         public double fita;
         public double[][] C;
@@ -133,22 +138,21 @@ public class BB extends SolucionadorQAP{
         public Node(QAP q, int[] v){
             qap = q;
             currassign = v;
-            GLB g = new GLB();
-            fita = g.calcularFita(this.qap.freq, this.qap.dist);
-            C = g.lawler;
+            fita = GLB.calcularFita(this.qap.freq, this.qap.dist);
+            C = GLB.lawler.clone();
         }
-        public Node[] Branch(){
-            Branch b = Branching(this);
+        public Node[] branch(){
+            Branch b = branching(this);
             Node[] res = new Node[qap.size()];
-            Map<Double,Node> map = new HashMap<Double,Node>();
+            Map<Double,Node> map = new HashMap<>();
             if (b.isRowBranch)
                 for(int i=0; i<qap.size(); ++i){
-                    Node n = new Node(qap.Reduced(b.index,i), newAssign(currassign,b.index,i));
+                    Node n = new Node(qap.reduced(b.index,i), newAssign(currassign,b.index,i));
                     map.put(n.fita, n);
                 }
             else
                 for(int i=0; i<qap.size(); ++i){
-                    Node n = new Node(qap.Reduced(i,b.index), newAssign(currassign,i,b.index));
+                    Node n = new Node(qap.reduced(i,b.index), newAssign(currassign,i,b.index));
                     map.put(n.fita, n);
                 }
             Double[] set = (Double[]) map.keySet().toArray();
@@ -200,7 +204,7 @@ public class BB extends SolucionadorQAP{
         }
     }
     
-    private class QAP{
+    protected class QAP{
         public double[][] dist;
         public double[][] freq;
         
@@ -220,13 +224,13 @@ public class BB extends SolucionadorQAP{
             return res;
         }
         
-        public QAP Reduced(int i, int j){
-            double[][] d = Reduce(dist,i,j);
-            double[][] f = Reduce(freq,i,j);
+        public QAP reduced(int i, int j){
+            double[][] d = reduce(dist,i,j);
+            double[][] f = reduce(freq,i,j);
             return new QAP(d,f);
         }
         
-        private double[][] Reduce(double[][] m, int i, int j){
+        private double[][] reduce(double[][] m, int i, int j){
             double[][] res = new double[m.length-1][m.length-1];
             for(int ii = 0; ii<res.length; ii++){
                 for(int jj = 0; jj<res[ii].length; jj++){
@@ -237,7 +241,7 @@ public class BB extends SolucionadorQAP{
         }
     }
     
-    private class Branch{
+    protected class Branch{
         public Boolean isRowBranch;
         public int index;
         public Branch(Boolean b, int i){
