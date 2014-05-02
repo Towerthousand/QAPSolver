@@ -30,9 +30,9 @@ public class BB extends SolucionadorQAP{
         int[] assign = new int[afinitats.length]; //results
         double cost = Double.POSITIVE_INFINITY; //results.objective
         int[] v = new int[assign.length];
-        for(int x : v) x = -1;
+        for (int i = 0; i<v.length; ++i) v[i] = -1;
         Stack<Node> s = new Stack();
-        s.push(new Node(init_qap, v));
+        s.push(new Node(init_qap, v, init_qap.size()));
         while(!s.empty()){
             Node n = s.pop();
             if(n.fita <= cost ){
@@ -140,15 +140,17 @@ public class BB extends SolucionadorQAP{
         public double fita;
         public double[][] C;
         public int[] currassign;
+        public int emptyspaces;
         
         public int size(){
             return qap.size();
         }
-        public Node(QAP q, int[] v){
+        public Node(QAP q, int[] v, int x){
             qap = q;
             currassign = v;
             fita = GLB.calcularFita(this.qap.freq, this.qap.dist);
             C = GLB.lawler.clone();
+            emptyspaces = x;
         }
         public Node[] branch(){
             Branch b = branching(this);
@@ -156,12 +158,14 @@ public class BB extends SolucionadorQAP{
             Map<Double,Node> map = new HashMap<>();
             if (b.isRowBranch)
                 for(int i=0; i<qap.size(); ++i){
-                    Node n = new Node(qap.reduced(b.index,i), newAssign(currassign,b.index,i));
+                    Node n = new Node(qap.reduced(b.index,i), 
+                            newAssign(currassign,b.index,i), emptyspaces-1);
                     map.put(n.fita, n);
                 }
             else
                 for(int i=0; i<qap.size(); ++i){
-                    Node n = new Node(qap.reduced(i,b.index), newAssign(currassign,i,b.index));
+                    Node n = new Node(qap.reduced(i,b.index), 
+                            newAssign(currassign,i,b.index), emptyspaces-1);
                     map.put(n.fita, n);
                 }
             Double[] set = (Double[]) map.keySet().toArray();
@@ -173,13 +177,12 @@ public class BB extends SolucionadorQAP{
         }
         public Boolean isAlmostSolved()
         {
-            int count = 0;
-            for(int x : currassign) if (x==-1) ++count;
-            return (count<=3);
+            return (emptyspaces<=3);
         }
+        //PRE: Només hi ha 3 posicions a -1 en currassign
         public int[][] whatsLeft()
         {
-            int[] llocs = new int[3], objs = new int[3];
+            int[] llocs = new int[emptyspaces], objs = new int[emptyspaces];
             int[] checklist = new int[currassign.length];
             int k = 0;
             for(int i = 0; i<currassign.length; ++i){

@@ -28,7 +28,12 @@ public class DriverBB {
                         if (q == null){
                             System.out.println("Debes crear un QAP para ver su tamaño.");
                         }
-                        else n = new BB.Node(q, new int[q.size()]);
+                        else{
+                            int[] v = new int[q.size()];
+                            for (int i = 0; i<v.length; ++i) v[i] = -1;
+                            n = new BB.Node(q, v, q.size());
+                        }
+                        System.out.println("Nodo creado!");
                         break;
                     }
                     case "nodeSize" :
@@ -69,43 +74,71 @@ public class DriverBB {
                         }
                         break;
                     }
+                    case "showBound":
+                    {
+                        if(n == null){
+                            System.out.println("Debes crear un nodo para poder"
+                                    + " ver su cota");
+                        }
+                        else{
+                            System.out.println("La cota es "+n.fita);
+                        }
+                        break;
+                    }
+                    case "showCostMatrix":
+                    {
+                        if(n == null){
+                            System.out.println("Debes crear un nodo para poder"
+                                    + " ver su matriz de costes");
+                        }
+                        else{
+                            for(int i=0; i<n.C.length; i++){
+                                System.out.println(Arrays.toString(n.C[i]));
+                            }
+                        }
+                        break;
+                    }
                     case "QAP" :
                     {
-                        System.out.println("Introduce nombre del archivo:");
-                        String l = br.readLine();
-                        BufferedReader br2 = new BufferedReader (new FileReader(l));
-                        int dim = Integer.parseInt(br2.readLine());
-                        System.out.println("Dimension del problema: "+dim);
-                        
-                        double[][] aff = new double[dim][dim];
-                        double[][] dist = new double[dim][dim];
-                        
-                        br2.readLine();
-                        for(int i = 0; i<dim; ++i){
-                            String[] x = br2.readLine().split(" ");
-                            int k = 0;
-                            for(int j = 0; j<dim; ++j){
-                                while(x[k].equals("")) ++k;
-                                aff[i][j] = Double.parseDouble(x[k]);
-                                k++;
+                        try{
+                            System.out.println("Introduce nombre del archivo:");
+                            String l = br.readLine();
+                            BufferedReader br2 = new BufferedReader (new FileReader(l));
+                            int dim = Integer.parseInt(br2.readLine());
+                            System.out.println("Dimension del problema: "+dim);
+
+                            double[][] aff = new double[dim][dim];
+                            double[][] dist = new double[dim][dim];
+
+                            br2.readLine();
+                            for(int i = 0; i<dim; ++i){
+                                String[] x = br2.readLine().split(" ");
+                                int k = 0;
+                                for(int j = 0; j<dim; ++j){
+                                    while(x[k].equals("")) ++k;
+                                    aff[i][j] = Double.parseDouble(x[k]);
+                                    k++;
+                                }
                             }
-                        }
-                        System.out.println("Matriz similitudes leida.");
-                        
-                        br2.readLine();
-                        for(int i = 0; i<dim; ++i){
-                            String[] x = br2.readLine().split(" ");
-                            int k =0;
-                            for(int j = 0; j<dim; ++j){
-                                while(x[k].equals("")) ++k;
-                                dist[i][j] = Double.parseDouble(x[k]);
-                                k++;
+                            System.out.println("Matriz similitudes leida.");
+
+                            br2.readLine();
+                            for(int i = 0; i<dim; ++i){
+                                String[] x = br2.readLine().split(" ");
+                                int k =0;
+                                for(int j = 0; j<dim; ++j){
+                                    while(x[k].equals("")) ++k;
+                                    dist[i][j] = Double.parseDouble(x[k]);
+                                    k++;
+                                }
                             }
+                            System.out.println("Matriz distancias leida.");
+
+                            q = new BB.QAP(dist, aff);
+                            System.out.println("QAP ha sido creado");
+                        } catch (IOException e){
+                            System.out.println("No se encuentra el archivo.");
                         }
-                        System.out.println("Matriz distancias leida.");
-                        
-                        q = new BB.QAP(dist, aff);
-                        System.out.println("QAP ha sido creado");
                         break;
                     }
                     case "showAff":
