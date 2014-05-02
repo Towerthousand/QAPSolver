@@ -9,6 +9,7 @@ import java.util.*;
  */
 public class BB extends SolucionadorQAP{
     
+    private QAP init_qap;
     public BB(CalcularAfinitats a, CalcularDistancies d)
     {
         super(a, d);
@@ -25,12 +26,13 @@ public class BB extends SolucionadorQAP{
     @Override
     public int[] calcularAssignacions(double[][] afinitats, double[][] distancies)
     {
+        init_qap = new QAP(distancies, afinitats);
         int[] assign = new int[afinitats.length]; //results
         double cost = Double.POSITIVE_INFINITY; //results.objective
         int[] v = new int[assign.length];
         for(int x : v) x = -1;
         Stack<Node> s = new Stack();
-        s.push(new Node(new QAP(distancies, afinitats), v));
+        s.push(new Node(init_qap, v));
         while(!s.empty()){
             Node n = s.pop();
             if(n.fita <= cost ){
@@ -44,7 +46,7 @@ public class BB extends SolucionadorQAP{
                         for(int i = 0; i<3; ++i){
                             xx[whatsleft[2][i]] = x[i];
                         }
-                        double newcost = n.qap.costOf(xx);
+                        double newcost = init_qap.costOf(xx);
                         if( newcost < cost){
                             assign = xx;
                             cost = newcost;
@@ -92,7 +94,7 @@ public class BB extends SolucionadorQAP{
     //Implementar Strong Branching en una subclase.
     //--------------------------------------------------------
     //En esta clase: weak branching
-    protected Branch branching(Node n)
+    protected static Branch branching(Node n)
     {
         return coreBranching(n);
     }
@@ -102,7 +104,7 @@ public class BB extends SolucionadorQAP{
      * @param n Node actual de l'espai de solucions.
      * @return Branca per la que es seguirà.
      */
-    protected Branch coreBranching(Node n)
+    protected static Branch coreBranching(Node n)
     {
         double[] rowSum = new double[n.C.length];
         double[] colSum = new double[n.C.length];
@@ -133,7 +135,7 @@ public class BB extends SolucionadorQAP{
         } 
     }
      
-    protected class Node{
+    protected static class Node{
         public QAP qap;
         public double fita;
         public double[][] C;
@@ -214,7 +216,7 @@ public class BB extends SolucionadorQAP{
         }
     }
     
-    protected class QAP{
+    protected static class QAP{
         public double[][] dist;
         public double[][] freq;
         
@@ -259,7 +261,7 @@ public class BB extends SolucionadorQAP{
         }
     }
     
-    protected class Branch{
+    protected static class Branch{
         public Boolean isRowBranch;
         public int index;
         public Branch(Boolean b, int i)
