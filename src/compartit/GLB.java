@@ -48,22 +48,22 @@ public class GLB {
         // els elements de la matriu af i dist treient les diagonals i ordenant
         // cada fila
 
-        double[][] afi = new double[n][n-1];
-        double[][] distj = new double[n][n-1];
+        Double[][] afi = new Double[n][n-1];
+        Double[][] distj = new Double[n][n-1];
         for(int i = 0; i<n; ++i){
             for(int j = 0; j<n; ++j) {
-                if(i<j){
+                if(i>j){
                     afi[i][j] = af[i][j];
                     distj[i][j] = dist[i][j];
                 }
-                else if(i>j){
-                    afi[i][j-1] = af[i][j-1];
-                    distj[i][j-1] = dist[i][j-1];
+                else if(i<j){
+                    afi[i][j-1] = af[i][j];
+                    distj[i][j-1] = dist[i][j];
                 }
             }
             // Ordenar cada fila de les matrius afi i distj
             Arrays.sort(afi[i]);
-            Arrays.sort(distj,Collections.reverseOrder());
+            Arrays.sort(distj[i],Collections.reverseOrder());
         }
         // Calcular producte escalar entre afi[i]*dist[j]
         for(int i = 0; i < n; i++){
