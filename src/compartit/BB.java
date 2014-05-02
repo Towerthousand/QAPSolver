@@ -9,7 +9,8 @@ import java.util.*;
  */
 public class BB extends SolucionadorQAP{
     
-    public BB(CalcularAfinitats a, CalcularDistancies d) {
+    public BB(CalcularAfinitats a, CalcularDistancies d)
+    {
         super(a, d);
     }
 
@@ -22,7 +23,8 @@ public class BB extends SolucionadorQAP{
      * que l'objecte 'i' te assignat el lloc 'j'.
      */
     @Override
-    public int[] calcularAssignacions(double[][] afinitats, double[][] distancies){
+    public int[] calcularAssignacions(double[][] afinitats, double[][] distancies)
+    {
         int[] assign = new int[afinitats.length]; //results
         double cost = Double.POSITIVE_INFINITY; //results.objective
         int[] v = new int[assign.length];
@@ -59,13 +61,15 @@ public class BB extends SolucionadorQAP{
         return assign;
     }
     
-    private ArrayList<int[]> permutations(int[] a) {
+    private ArrayList<int[]> permutations(int[] a)
+    {
         ArrayList<int[]> ret = new ArrayList<>();
         permutation(a, 0, ret);
         return ret;
     }
 
-    private void permutation(int[] a, int pos, ArrayList<int[]> list){
+    private void permutation(int[] a, int pos, ArrayList<int[]> list)
+    {
         if(a.length - pos == 1)
             list.add(a.clone());
         else
@@ -76,7 +80,8 @@ public class BB extends SolucionadorQAP{
             }
     }
 
-    private void swap(int[] arr, int i, int j){
+    private void swap(int[] arr, int i, int j)
+    {
         int tmp = arr[i];
         arr[i] = arr[j];
         arr[j] = tmp;
@@ -87,7 +92,8 @@ public class BB extends SolucionadorQAP{
     //Implementar Strong Branching en una subclase.
     //--------------------------------------------------------
     //En esta clase: weak branching
-    protected Branch branching(Node n){
+    protected Branch branching(Node n)
+    {
         return coreBranching(n);
     }
     
@@ -96,7 +102,8 @@ public class BB extends SolucionadorQAP{
      * @param n Node actual de l'espai de solucions.
      * @return Branca per la que es seguirà.
      */
-    protected Branch coreBranching(Node n){
+    protected Branch coreBranching(Node n)
+    {
         double[] rowSum = new double[n.C.length];
         double[] colSum = new double[n.C.length];
         for (int i = 0; i < n.C.length; i++) {
@@ -162,12 +169,14 @@ public class BB extends SolucionadorQAP{
             }
             return res;
         }
-        public Boolean isAlmostSolved(){
+        public Boolean isAlmostSolved()
+        {
             int count = 0;
             for(int x : currassign) if (x==-1) ++count;
             return (count<=3);
         }
-        public int[][] whatsLeft(){
+        public int[][] whatsLeft()
+        {
             int[] llocs = new int[3], objs = new int[3];
             int[] checklist = new int[currassign.length];
             int k = 0;
@@ -191,7 +200,8 @@ public class BB extends SolucionadorQAP{
             return res;
         }
         
-        private int[] newAssign(int[] v, int i, int j){
+        private int[] newAssign(int[] v, int i, int j)
+        {
             int[] res = v.clone();
             for(int k = 0; k<v.length; ++k){
                 if(v[k]!=-1){
@@ -208,13 +218,19 @@ public class BB extends SolucionadorQAP{
         public double[][] dist;
         public double[][] freq;
         
-        public QAP(double[][] distances, double[][] freq){}
+        public QAP(double[][] distances, double[][] freqs)
+        {
+            dist = distances;
+            freq = freqs;
+        }
         
-        public int size(){
+        public int size()
+        {
             return dist.length;
         }
         
-        public double costOf(int[] pos){
+        public double costOf(int[] pos)
+        {
             double res = 0;
             for (int i = 0; i<dist.length; i++){
                 for (int j = 0; j<dist.length; j++){
@@ -224,13 +240,15 @@ public class BB extends SolucionadorQAP{
             return res;
         }
         
-        public QAP reduced(int i, int j){
+        public QAP reduced(int i, int j)
+        {
             double[][] d = reduce(dist,i,j);
             double[][] f = reduce(freq,i,j);
             return new QAP(d,f);
         }
         
-        private double[][] reduce(double[][] m, int i, int j){
+        private double[][] reduce(double[][] m, int i, int j)
+        {
             double[][] res = new double[m.length-1][m.length-1];
             for(int ii = 0; ii<res.length; ii++){
                 for(int jj = 0; jj<res[ii].length; jj++){
@@ -244,7 +262,8 @@ public class BB extends SolucionadorQAP{
     protected class Branch{
         public Boolean isRowBranch;
         public int index;
-        public Branch(Boolean b, int i){
+        public Branch(Boolean b, int i)
+        {
             isRowBranch = b;
             index = i;
         }
