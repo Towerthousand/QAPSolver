@@ -24,6 +24,21 @@ public class DriverBB {
             while ( (line = br.readLine()) != null){
                 String[] com = line.split(" ");
                 switch(com[0]){
+                    case "CalcularAssignacions" :
+                    {
+                        if (brunchy == null){
+                            System.out.println("No has hecho makeBB!");
+                        }
+                        else if (q == null){
+                            System.out.println("No has introducido ningun QAP!");
+                        }
+                        else{
+                            int[] x = brunchy.calcularAssignacions(q.freq, q.dist);
+                            System.out.println("L'assignació és:");
+                            System.out.println(Arrays.toString(x));
+                        }
+                        break;
+                    }
                     case "makeBB" :
                     {
                         brunchy = new BB(new Basura(), new CalcularDistancies());

@@ -40,11 +40,11 @@ public class BB extends SolucionadorQAP{
                 assign = n.currassign;
                 if (n.isAlmostSolved()){
                     int[][] whatsleft = n.whatsLeft();
-                    ArrayList<int[]> ss = permutations(whatsleft[1]);
+                    ArrayList<int[]> ss = permutations(whatsleft[0]);
                     for(int[] x : ss){
                         int[] xx = n.currassign.clone();
                         for(int i = 0; i<3; ++i){
-                            xx[whatsleft[2][i]] = x[i];
+                            xx[whatsleft[1][i]] = x[i];
                         }
                         double newcost = init_qap.costOf(xx);
                         if( newcost < cost){
@@ -179,7 +179,6 @@ public class BB extends SolucionadorQAP{
         {
             return (emptyspaces<=3);
         }
-        //PRE: Només hi ha 3 posicions a -1 en currassign
         public int[][] whatsLeft()
         {
             int[] llocs = new int[emptyspaces], objs = new int[emptyspaces];
