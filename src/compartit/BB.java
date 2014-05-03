@@ -168,7 +168,7 @@ public class BB extends SolucionadorQAP{
                             newAssign(currassign,i,b.index), emptyspaces-1);
                     map.put(n.fita, n);
                 }
-            Double[] set = (Double[]) map.keySet().toArray();
+            Object[] set = map.keySet().toArray();
             Arrays.sort(set, Collections.reverseOrder());
             for(int i=0; i<qap.size(); ++i){
                 res[i] = map.get(set[i]);

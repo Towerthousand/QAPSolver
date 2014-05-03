@@ -11,6 +11,7 @@ public class DriverBB {
     private static BB.Node n = null;
     private static BB.Branch b = null;
     private static BB brunchy = null;
+    private static BB.Node[] descent = null;
     
     /**
      * @param args the command line arguments
@@ -45,7 +46,39 @@ public class DriverBB {
                         }
                         break;
                     }
-                    
+                    case "doBranch" :
+                    {
+                        if (n == null) {
+                            System.out.println("Debe existir un nodo sobre el que"
+                                    + "realizar el branching");
+                        }
+                        else{
+                            descent = n.branch();
+                            System.out.println("Se han creado los nodos hijos");
+                            System.out.println("Numero de hijos: "+descent.length);
+                        }
+                        break;
+                    }
+                    case "focusChild" :
+                    {
+                        if (descent == null){
+                            System.out.println("No has hecho ningun doBranch!");
+                        }
+                        else if(com.length != 2){
+                            System.out.println("Necesita un argumento: qué hijo quieres ver?");
+                        }
+                        else{
+                            int x = Integer.parseInt(com[1]);
+                            if(x < 0 || x > descent.length){
+                                System.out.println("Índice incorrecto!");
+                            }
+                            else{
+                                n = descent[x];
+                                System.out.println("Focus set on child # "+x);
+                            }
+                        }
+                        break;
+                    }
                     case "makeNode" :
                     {
                         if (q == null){
@@ -164,6 +197,18 @@ public class DriverBB {
                         }
                         break;
                     }
+                    case "showNodeAff":
+                    {
+                        if (n == null){
+                            System.out.println("Debes crear un nodo para ver su matriz"
+                                    + " de afinidades.");
+                        }
+                        else{
+                            for(int i=0; i<n.size(); ++i)
+                                System.out.println(Arrays.toString(n.qap.freq[i]));
+                        }
+                        break;
+                    }
                     case "showAff":
                     {
                         if (q == null){
@@ -173,6 +218,18 @@ public class DriverBB {
                         else{
                             for(int i=0; i<q.size(); ++i)
                                 System.out.println(Arrays.toString(q.freq[i]));
+                        }
+                        break;
+                    }
+                    case "showNodeDist":
+                    {
+                        if (q == null){
+                            System.out.println("Debes crear un nodo para ver su matriz"
+                                    + " de distancias.");
+                        }
+                        else{
+                            for(int i=0; i<n.size(); ++i)
+                                System.out.println(Arrays.toString(n.qap.dist[i]));
                         }
                         break;
                     }
