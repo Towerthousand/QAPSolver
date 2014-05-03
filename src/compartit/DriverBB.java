@@ -23,6 +23,29 @@ public class DriverBB {
             while ( (line = br.readLine()) != null){
                 String[] com = line.split(" ");
                 switch(com[0]){
+                    case "makeBB" :
+                    {
+                        brunchy = new BB(new Basura(), new CalcularDistancies());
+                        System.out.println("BB creado!");
+                        break;
+                    }
+                    case "branchDecision" :
+                    {
+                        if (brunchy == null){
+                            System.out.println("Debes crear un BB para poder usar este metodo");
+                        }
+                        else if(n == null){
+                            System.out.println("Debe existir un nodo sobre el que calcular la"
+                                    + "branching decision.");
+                        }
+                        else{
+                            b = brunchy.branching(n);
+                            System.out.println("Index = "+b.index);
+                            System.out.println("IsRowBranch = "+b.isRowBranch);
+                        }
+                        break;
+                    }
+                    
                     case "makeNode" :
                     {
                         if (q == null){
@@ -64,8 +87,8 @@ public class DriverBB {
                     case "whatsLeft":
                     {
                         if (n == null){
-                            System.out.println("Debes crear un nodo par ver si está "
-                                    + "casi resuelto");
+                            System.out.println("Debes crear un nodo par ver qué "
+                                    + "objetos y lugares faltan por asignar");
                         }
                         else{
                             int[][] x = n.whatsLeft();
