@@ -160,13 +160,13 @@ public class BB extends SolucionadorQAP{
                 for(int i=0; i<qap.size(); ++i){
                     Node n = new Node(qap.reduced(b.index,i), 
                             newAssign(currassign,b.index,i), emptyspaces-1);
-                    map.put(n.fita, n);
+                    pushIntoMap(map, n.fita, n);
                 }
             else
                 for(int i=0; i<qap.size(); ++i){
                     Node n = new Node(qap.reduced(i,b.index), 
                             newAssign(currassign,i,b.index), emptyspaces-1);
-                    map.put(n.fita, n);
+                    pushIntoMap(map, n.fita, n);
                 }
             Object[] set = map.keySet().toArray();
             Arrays.sort(set, Collections.reverseOrder());
@@ -174,6 +174,13 @@ public class BB extends SolucionadorQAP{
                 res[i] = map.get(set[i]);
             }
             return res;
+        }
+        private void pushIntoMap(Map<Double,Node> m, Double key, Node value){
+            if(m.containsKey(key)){
+                pushIntoMap(m,key+1,value);
+            }
+            else
+                m.put(key, value);
         }
         public Boolean isAlmostSolved()
         {
@@ -197,7 +204,7 @@ public class BB extends SolucionadorQAP{
             for(int i = 0; i<currassign.length; ++i){
                 if(checklist[i]!=1){
                     llocs[k] = i;
-                    ++k;
+                    k++;
                 }
             }
             int[][] res = {objs,llocs};
