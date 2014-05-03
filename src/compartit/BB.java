@@ -37,14 +37,14 @@ public class BB extends SolucionadorQAP{
             Node n = s.pop();
             if(n.fita <= cost ){
                 cost = n.fita;
-                assign = n.currassign;
+                assign = n.currassign.clone();
                 if (n.isAlmostSolved()){
                     int[][] whatsleft = n.whatsLeft();
-                    ArrayList<int[]> ss = permutations(whatsleft[0]);
+                    ArrayList<int[]> ss = permutations(whatsleft[1]);
                     for(int[] x : ss){
-                        int[] xx = n.currassign.clone();
+                        int[] xx = assign.clone();
                         for(int i = 0; i<3; ++i){
-                            xx[whatsleft[1][i]] = x[i];
+                            xx[whatsleft[0][i]] = x[i];
                         }
                         double newcost = init_qap.costOf(xx);
                         if( newcost < cost){
