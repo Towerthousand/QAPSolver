@@ -35,7 +35,6 @@ public class GLB {
      * Retorna la matriu de costos de gilmore-lawler aplicant l'algoritme de 
      * gilmore-lawler per un problema Koopmans-Beckman QAP(A,B,C) on A 
      * és la matriu d'afinitats(af), B la matriu de distancies(dist) i C és 0 i
-     * les diagonals de A i B també són 0.
      * 
      * @param af
      * @param dist
@@ -48,29 +47,34 @@ public class GLB {
         // els elements de la matriu af i dist treient les diagonals i ordenant
         // cada fila
 
-        Double[][] afi = new Double[n][n-1];
+        Double[] afi = new Double[n-1];
         Double[][] distj = new Double[n][n-1];
         for(int i = 0; i<n; ++i){
-            for(int j = 0; j<n; ++j) {
-                if(i>j){
-                    afi[i][j] = af[i][j];
-                    distj[i][j] = dist[i][j];
-                }
-                else if(i<j){
-                    afi[i][j-1] = af[i][j];
-                    distj[i][j-1] = dist[i][j];
-                }
+            for (int j = 0; j < i; j++) {
+                distj[i][j] = dist[i][j];
             }
-            // Ordenar cada fila de les matrius afi i distj
-            Arrays.sort(afi[i]);
+            for (int j = i + 1; j < n; j++) {
+                distj[i][j - 1] = dist[i][j];
+            }
             Arrays.sort(distj[i],Collections.reverseOrder());
+
         }
-        // Calcular producte escalar entre afi[i]*dist[j]
-        for(int i = 0; i < n; i++){
-            for(int j = 0; j < n; j++){
-                for(int k = 0; k < n-1; ++k){
-                    lawler[i][j] += afi[i][k]*distj[j][k];
+        // Lawler_ij = A_ii * B_jj
+        // afi es calcula a continuacio
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                afi[j] = af[i][j];
+            }
+            for (int j = i + 1; j < n; j++) {
+                afi[j - 1] = af[i][j];
+            }
+            Arrays.sort(afi); 
+            for (int j = 0; j < n; j++) {
+                double l_ij = af[i][i] * dist[j][j];
+                for (int k = 0; k < n - 1; k++) {
+                    l_ij += afi[k] * distj[j][k];
                 }
+                lawler[i][j] = l_ij;
             }
         }
     }
