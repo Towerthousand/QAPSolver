@@ -14,6 +14,9 @@ public class BB extends SolucionadorQAP{
     {
         super(a, d);
     }
+    public BB(double[][] aff, double[][] dist){
+        super(aff, dist);
+    }
 
  
      /**
