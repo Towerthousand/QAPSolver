@@ -27,11 +27,11 @@ public abstract class SolucionadorQAP {
 		if(calcDist == null) throw new Exception("S'ha de utilitzar una instancia de CalularAfinitats i CalcularDistancies per utilitzar aquesta funció");
 		return calcularAssignacions(calcAfin.calcularMatriuAfinitats(objs),calcDist.calcularMatriuDistancies(llocs));
 	}
-
+ 
 	public int[] solucionar() throws Exception {
 		if(a == null) throw new Exception("S'han de passar les dues matrius del QAP a la constructora per utilitzar aquesta funció");
 		return calcularAssignacions(a,d);
 	}
 	
-    protected abstract int[] calcularAssignacions(double[][] af, double[][] distancies);
+    protected abstract int[] calcularAssignacions(double[][] af, double[][] distancies) throws Exception;
 }

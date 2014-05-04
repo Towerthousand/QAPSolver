@@ -5,7 +5,7 @@ public class Solucio {
     private final SolucionadorQAP solucionador;
 	public Solucio(SolucionadorQAP s, Objecte[] objs, Lloc[] llocs) throws Exception { //li passes un objecte BB o un Heuristic
     	solucionador = s;
-    	recalcular(objs, llocs);
+		assignacions = solucionador.solucionar(objs, llocs);
     }
 
 	public Solucio(SolucionadorQAP s) throws Exception { //li passes un objecte BB o un Heuristic
