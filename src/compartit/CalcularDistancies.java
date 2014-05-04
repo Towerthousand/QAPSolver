@@ -2,7 +2,7 @@ package compartit;
 
 /**
  *
- * @author 
+ * @author Joan Vilatimó
  */
 public class CalcularDistancies {
 	
@@ -22,9 +22,9 @@ public class CalcularDistancies {
         for (int i = 0; i < llocs.length; ++i) {
             MatriuDistancies[i][i] = 0;
             for (int j = i+1; j < llocs.length; ++j) {
-                double dist = Math.pow(llocs[i].getPosicioX() - llocs[i+1].getPosicioX(), 2);
-                dist += Math.pow(llocs[i].getPosicioY() - llocs[i+1].getPosicioY(), 2);
-                dist += Math.pow(llocs[i].getPosicioZ() - llocs[i+1].getPosicioZ(), 2);
+                double dist = Math.pow(llocs[i].getPosicioX() - llocs[j].getPosicioX(), 2);
+                dist += Math.pow(llocs[i].getPosicioY() - llocs[j].getPosicioY(), 2);
+                dist += Math.pow(llocs[i].getPosicioZ() - llocs[j].getPosicioZ(), 2);
                 dist = Math.sqrt(dist);   
                 MatriuDistancies[i][j] = dist;
                 MatriuDistancies[j][i] = dist;
