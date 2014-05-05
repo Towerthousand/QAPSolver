@@ -9,7 +9,9 @@ import java.util.*;
  */
 public class BB extends SolucionadorQAP{
     
+    //problema inicial
     private QAP init_qap;
+    
     public BB(CalcularAfinitats a, CalcularDistancies d)
     {
         super(a, d);
@@ -31,24 +33,21 @@ public class BB extends SolucionadorQAP{
     {
         init_qap = new QAP(distancies, afinitats);
         int[] assign = new int[afinitats.length]; //results
-        double cost = Double.POSITIVE_INFINITY; //results.objective
+        for (int i= 0; i<assign.length; ++i) assign[i] = i;
+        double cost = init_qap.costOf(assign); //results.objective
         int[] v = new int[assign.length];
         for (int i = 0; i<v.length; ++i) v[i] = -1;
         PriorityQueue<Node> s = new PriorityQueue<>();
         s.add(new Node(init_qap, v, 0));
         while(s.size() != 0){
-            //System.out.println(s.size());
             Node n = s.poll();
             if(n.fita < cost){
-                //cost = n.fita;
-                //assign = n.currassign.clone();
                 if (n.isAlmostSolved()){
                     //System.out.println("im in " + cost + " "+ n.hashCode());
                     int[][] whatsleft = n.whatsLeft();
                     ArrayList<int[]> ss = permutations(whatsleft[1]);
                     for(int[] p : ss){
                         int[] current_asign = n.currassign.clone();
-                        //System.out.println(Arrays.toString(assign) + " " + Arrays.toString(whatsleft[0]));
                         for(int i = 0; i<whatsleft[0].length; ++i){
                             current_asign[whatsleft[0][i]] = p[i];
                         }
@@ -70,6 +69,7 @@ public class BB extends SolucionadorQAP{
         return assign;
     }
     
+    //Retorna una llista amb les permutacions de 'a'
     private ArrayList<int[]> permutations(int[] a)
     {
         ArrayList<int[]> ret = new ArrayList<>();
@@ -157,7 +157,8 @@ public class BB extends SolucionadorQAP{
         public int[] currassign;
         public double shift;
         
-        public int size(){
+        public int size()
+        {
             return qap.size();
         }
         public Node(QAP q, int[] v, double extracost){
@@ -175,7 +176,8 @@ public class BB extends SolucionadorQAP{
             else if (this.fita == n.fita) return 0;
             else return -1;
         }
-        public Node[] branch(){ 
+        public Node[] branch()
+        { 
             Branch b = branching(this);
             Node[] res = new Node[qap.size()];
             if (b.isRowBranch)

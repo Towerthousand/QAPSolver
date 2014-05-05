@@ -175,7 +175,12 @@ public class DriverBB {
                             System.out.println("Introduce nombre del archivo:");
                             String l = br.readLine();
                             BufferedReader br2 = new BufferedReader (new FileReader(l));
-                            int dim = Integer.parseInt(br2.readLine());
+                            String[] s = br2.readLine().split(" ");
+                            int index=0;
+                            for(int i = 0; i < s.length; ++i){
+                                if(!(s[i].equals("") || s[i].equals(" "))) index = i;
+                            }
+                            int dim = Integer.parseInt(s[index]);
                             System.out.println("Dimension del problema: "+dim);
 
                             double[][] aff = new double[dim][dim];
