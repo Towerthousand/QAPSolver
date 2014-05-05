@@ -106,8 +106,8 @@ public class TS extends SolucionadorQAP {
 		return swap;
 	}
 
-	private int[] getLocalBest(ArrayList<int[]> candidateList) throws Exception{
-		if(candidateList.size() == 0) throw new Exception("candidate list empty");
+	private int[] getLocalBest(ArrayList<int[]> candidateList) {
+		if(candidateList.size() == 0) return null;
 		int[] sol = candidateList.get(0);
 		double cost = cost(sol);
 		for(int i = 0; i < candidateList.size(); ++i) {
@@ -137,6 +137,10 @@ public class TS extends SolucionadorQAP {
 					candidateList.add(neighbours.get(i));
 			}
 			int[] localBest = getLocalBest(candidateList);
+			if(localBest == null) {
+				tabuList.clear();
+				continue;
+			}
 			tabuList.add(getDiff(localBest, bestSol));
 			currBestSol = localBest;
 			if(cost(currBestSol) < cost(bestSol)) {
