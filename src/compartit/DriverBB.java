@@ -45,22 +45,22 @@ public class DriverBB {
                         System.out.println("BB creado!");
                         break;
                     }
-                    case "branchDecision" :
-                    {
-                        if (brunchy == null){
-                            System.out.println("Debes crear un BB para poder usar este metodo");
-                        }
-                        else if(n == null){
-                            System.out.println("Debe existir un nodo sobre el que calcular la"
-                                    + "branching decision.");
-                        }
-                        else{
-                            b = brunchy.branching(n);
-                            System.out.println("Index = "+b.index);
-                            System.out.println("IsRowBranch = "+b.isRowBranch);
-                        }
-                        break;
-                    }
+//                    case "branchDecision" :
+//                    {
+//                        if (brunchy == null){
+//                            System.out.println("Debes crear un BB para poder usar este metodo");
+//                        }
+//                        else if(n == null){
+//                            System.out.println("Debe existir un nodo sobre el que calcular la"
+//                                    + "branching decision.");
+//                        }
+//                        else{
+//                            b = brunchy.weakBranching(n);
+//                            System.out.println("Index = "+b.index);
+//                            System.out.println("IsRowBranch = "+b.isRowBranch);
+//                        }
+//                        break;
+//                    }
                     case "doBranch" :
                     {
                         if (n == null) {
@@ -102,7 +102,7 @@ public class DriverBB {
                         else{
                             int[] v = new int[q.size()];
                             for (int i = 0; i<v.length; ++i) v[i] = -1;
-                            n = new BB.Node(q, v, q.size());
+                            n = new BB.Node(q, v, 0);
                         }
                         System.out.println("Nodo creado!");
                         break;

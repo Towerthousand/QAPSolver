@@ -34,31 +34,35 @@ public class BB extends SolucionadorQAP{
         double cost = Double.POSITIVE_INFINITY; //results.objective
         int[] v = new int[assign.length];
         for (int i = 0; i<v.length; ++i) v[i] = -1;
-        Stack<Node> s = new Stack();
-        s.push(new Node(init_qap, v, init_qap.size()));
-        while(!s.empty()){
-            Node n = s.pop();
-            if(n.fita <= cost ){
-                cost = n.fita;
-                assign = n.currassign.clone();
+        PriorityQueue<Node> s = new PriorityQueue<>();
+        s.add(new Node(init_qap, v, 0));
+        while(s.size() != 0){
+            //System.out.println(s.size());
+            Node n = s.poll();
+            if(n.fita < cost){
+                //cost = n.fita;
+                //assign = n.currassign.clone();
                 if (n.isAlmostSolved()){
+                    System.out.println("im in " + cost + " "+ n.hashCode());
                     int[][] whatsleft = n.whatsLeft();
                     ArrayList<int[]> ss = permutations(whatsleft[1]);
-                    for(int[] x : ss){
-                        int[] xx = assign.clone();
+                    for(int[] p : ss){
+                        int[] current_asign = n.currassign.clone();
+                        //System.out.println(Arrays.toString(assign) + " " + Arrays.toString(whatsleft[0]));
                         for(int i = 0; i<3; ++i){
-                            xx[whatsleft[0][i]] = x[i];
+                            current_asign[whatsleft[0][i]] = p[i];
                         }
-                        double newcost = init_qap.costOf(xx);
+                        double newcost = init_qap.costOf(current_asign);
                         if( newcost < cost){
-                            assign = xx;
+                            assign = current_asign.clone();
                             cost = newcost;
                         }
                     }
                     
                 } else  {
-                    for(Node sn : n.branch()){
-                        s.push(sn);
+                    Node[] xx = n.branch();
+                    for(Node sn : xx){
+                        if(sn.fita < cost ) s.add(sn);
                     }
                 }
             }
@@ -91,107 +95,108 @@ public class BB extends SolucionadorQAP{
         arr[i] = arr[j];
         arr[j] = tmp;
     }
-    
-    //IDEA PARA subclasses
-    //====================
-    //Implementar Strong Branching en una subclase.
-    //--------------------------------------------------------
-    //En esta clase: weak branching
-    protected static Branch branching(Node n)
+   
+    private static Branch branching(Node n)
+//    protected static Branch weakBranching(Node n)
     {
-        return coreBranching(n);
+        return coreBranching(n, n.C);
     }
     
-    /**
-     *
-     * @param n Node actual de l'espai de solucions.
-     * @return Branca per la que es seguirà.
-     */
-    protected static Branch coreBranching(Node n)
-    {
-        double[] rowSum = new double[n.C.length];
-        double[] colSum = new double[n.C.length];
-        for (int i = 0; i < n.C.length; i++) {
-            for (int j = 0; j < n.C.length; j++) {
-                rowSum[i] += n.C[i][j];
-                colSum[j] += n.C[i][j];
-            }
-        }     
-        int rowind = 0, colind = 0;
-        double rowbest = rowSum[0], colbest = colSum[0];
-        for (int i=1; i<n.C.length; ++i){
-            if(rowbest < rowSum[i]){
-                rowbest = rowSum[i];
-                rowind = i;
-            }
-            if(colbest < colSum[i]){
-                colbest = colSum[i];
-                colind = i;
-            }
-        }
-        
-        if(rowbest > colbest){
-            return new Branch(true, rowind);
-        }
-        else{
-            return new Branch(false, colind);
-        } 
-    }
-     
-    protected static class Node{
+//    protected static Branch strongBranching(Node n)
+//    {
+//        double[][] U = new double[n.size()-1][n.size()-1];
+//        for(int i = 0; i<n.size(); ++i){
+//            for(int j = 0; j<n.size(); ++j){
+//                QAP q = n.qap.reduced(i, j);
+//                U[i][j] = GLB.calcularFita(q.freq, q.dist) - n.fita;
+//            }
+//        }
+//        return coreBranching(n, U);
+//    }
+    
+   /**
+    *
+    * @param n Node actual de l'espai de solucions.
+    * @return Branca per la que es seguirà.
+    */
+   private static Branch coreBranching(Node n, double[][] CostMatrix)
+   {
+       double[] rowSum = new double[CostMatrix.length];
+       double[] colSum = new double[CostMatrix.length];
+       for (int i = 0; i < CostMatrix.length; i++) {
+           for (int j = 0; j < CostMatrix.length; j++) {
+               rowSum[i] += CostMatrix[i][j];
+               colSum[j] += CostMatrix[i][j];
+           }
+       }
+       int rowind = 0, colind = 0;
+       double rowbest = rowSum[0], colbest = colSum[0];
+       for (int i=1; i<CostMatrix.length; ++i){
+           if(rowbest < rowSum[i]){
+               rowbest = rowSum[i];
+               rowind = i;
+           }
+           if(colbest < colSum[i]){
+               colbest = colSum[i];
+               colind = i;
+           }
+       }
+
+       if(rowbest > colbest){
+           return new Branch(true, rowind);
+       }
+       else{
+           return new Branch(false, colind);
+       } 
+   }
+    
+    protected static class Node implements Comparable<Node>{
         public QAP qap;
         public double fita;
         public double[][] C;
         public int[] currassign;
-        public int emptyspaces;
+        public double shift;
         
         public int size(){
             return qap.size();
         }
-        public Node(QAP q, int[] v, int x){
+        public Node(QAP q, int[] v, double extracost){
             qap = q;
             currassign = v;
-            fita = GLB.calcularFita(this.qap.freq, this.qap.dist);
+            shift = extracost;
+            fita = GLB.calcularFita(this.qap.freq, this.qap.dist) + extracost;
             C = GLB.lawler.clone();
-            emptyspaces = x;
         }
-        public Node[] branch(){
+        
+        @Override
+        public int compareTo(Node n)
+        {
+            if (this.fita > n.fita) return 1;
+            else if (this.fita == n.fita) return 0;
+            else return -1;
+        }
+        public Node[] branch(){ 
             Branch b = branching(this);
             Node[] res = new Node[qap.size()];
-            Map<Double,Node> map = new HashMap<>();
             if (b.isRowBranch)
                 for(int i=0; i<qap.size(); ++i){
-                    Node n = new Node(qap.reduced(b.index,i), 
-                            newAssign(currassign,b.index,i), emptyspaces-1);
-                    pushIntoMap(map, n.fita, n);
+                    res[i] = new Node(qap.reduced(b.index,i), 
+                            newAssign(currassign,b.index,i), shift + C[b.index][i]);
                 }
             else
                 for(int i=0; i<qap.size(); ++i){
-                    Node n = new Node(qap.reduced(i,b.index), 
-                            newAssign(currassign,i,b.index), emptyspaces-1);
-                    pushIntoMap(map, n.fita, n);
+                    res[i] = new Node(qap.reduced(i,b.index), 
+                            newAssign(currassign,i,b.index), shift + C[i][b.index]);
                 }
-            Object[] set = map.keySet().toArray();
-            Arrays.sort(set, Collections.reverseOrder());
-            for(int i=0; i<qap.size(); ++i){
-                res[i] = map.get(set[i]);
-            }
             return res;
-        }
-        private void pushIntoMap(Map<Double,Node> m, Double key, Node value){
-            if(m.containsKey(key)){
-                pushIntoMap(m,key+1,value);
-            }
-            else
-                m.put(key, value);
         }
         public Boolean isAlmostSolved()
         {
-            return (emptyspaces<=3);
+            return (qap.size()<=3);
         }
         public int[][] whatsLeft()
         {
-            int[] llocs = new int[emptyspaces], objs = new int[emptyspaces];
+            int[] llocs = new int[qap.size()], objs = new int[qap.size()];
             int[] checklist = new int[currassign.length];
             int k = 0;
             for(int i = 0; i<currassign.length; ++i){
@@ -217,11 +222,15 @@ public class BB extends SolucionadorQAP{
         private int[] newAssign(int[] v, int i, int j)
         {
             int[] res = v.clone();
+            int[] checklist = new int[v.length];
             for(int k = 0; k<v.length; ++k){
                 if(v[k]!=-1){
                     if(k<=i) ++i;
-                    if(v[k]<=j) ++j;
+                    checklist[v[k]] = 1;
                 }
+            }
+            for (int k=0; k<v.length; ++k){
+                if(checklist[k] == 1 && k<=j) ++j;
             }
             res[i]=j;
             return res;
