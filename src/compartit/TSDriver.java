@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 public class TSDriver {
-	//PER ACABAR. Simplement prova l'algorisme.
 	private static double cost(int[] solution, double[][] a, double[][] d) {
 		double res = 0;
 		for (int i = 0; i < solution.length; i++){
