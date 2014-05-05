@@ -49,7 +49,7 @@ public class BB extends SolucionadorQAP{
                     for(int[] p : ss){
                         int[] current_asign = n.currassign.clone();
                         //System.out.println(Arrays.toString(assign) + " " + Arrays.toString(whatsleft[0]));
-                        for(int i = 0; i<3; ++i){
+                        for(int i = 0; i<whatsleft[0].length; ++i){
                             current_asign[whatsleft[0][i]] = p[i];
                         }
                         double newcost = init_qap.costOf(current_asign);
