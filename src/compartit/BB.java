@@ -43,7 +43,7 @@ public class BB extends SolucionadorQAP{
                 //cost = n.fita;
                 //assign = n.currassign.clone();
                 if (n.isAlmostSolved()){
-                    System.out.println("im in " + cost + " "+ n.hashCode());
+                    //System.out.println("im in " + cost + " "+ n.hashCode());
                     int[][] whatsleft = n.whatsLeft();
                     ArrayList<int[]> ss = permutations(whatsleft[1]);
                     for(int[] p : ss){
