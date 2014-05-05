@@ -16,4 +16,8 @@ public class Solucio {
 	public void recalcular(Objecte[] objs, Lloc[] llocs) throws Exception {
 		assignacions = solucionador.solucionar(objs, llocs);
 	}
+	
+	public void recalcular() throws Exception {
+		assignacions = solucionador.solucionar();
+	}
 }

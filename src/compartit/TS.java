@@ -33,30 +33,22 @@ public class TS extends SolucionadorQAP {
         super(afinitats, distancies);
     }
 	
-	public int numIterations = 5;
-	public int maxTabuListSize = 3;
+	public int numIterations = 50;
+	public int maxTabuListSize = 1000;
+	public int numSearches = 1000;
+	public Random random = new Random();
 	private int N;
 	private double[][] FLOW;
 	private double[][] DIST;
 	
 	// Implementing Fisher–Yates shuffle
 	private void shuffleArray(int[] ar) {
-		Random rnd = new Random();
 		for (int i = ar.length - 1; i > 0; i--) {
-			int index = rnd.nextInt(i + 1);
+			int index = random.nextInt(i + 1);
 			int a = ar[index];
 			ar[index] = ar[i];
 			ar[i] = a;
 		}
-	}
-
-	public void printSolution(int[] solution) {
-		System.out.print("Solution: [");
-		for(int i = 0; i < N; ++i) {
-			if(i != 0) System.out.print(", ");
-			System.out.print(solution[i]);
-		}
-		System.out.println("] Cost: " + cost(solution));
 	}
 
 	private void checkInputMatrices() throws Exception {
@@ -128,16 +120,11 @@ public class TS extends SolucionadorQAP {
 		return sol;
 	}
 
-	@Override
-	protected int[] calcularAssignacions(double[][] af, double[][] distancies) throws Exception {
-		N = af.length;
-		FLOW = af;
-		DIST = distancies;
-		checkInputMatrices();
-		
+	private int[] search() throws Exception {
 		int[] bestSol = new int[N];
 		for(int i = 0; i < N; ++i) bestSol[i] = i;
 		shuffleArray(bestSol); //initial, random solution
+		int[] currBestSol = bestSol.clone();
 		
 		ArrayList<Swap> tabuList = new ArrayList<Swap>();
 		ArrayList<int[]> candidateList = new ArrayList<int[]>();
@@ -150,14 +137,35 @@ public class TS extends SolucionadorQAP {
 					candidateList.add(neighbours.get(i));
 			}
 			int[] localBest = getLocalBest(candidateList);
-			if(cost(localBest) < cost(bestSol)) {
-				tabuList.add(getDiff(localBest, bestSol));
-				bestSol = localBest;
+			tabuList.add(getDiff(localBest, bestSol));
+			currBestSol = localBest;
+			if(cost(currBestSol) < cost(bestSol)) {
 				notGettingBetter = 0;
+				bestSol = currBestSol;
 			}
 			else ++notGettingBetter;
-			if((notGettingBetter > 5 || tabuList.size() > maxTabuListSize) && tabuList.size() > 0) tabuList.remove(0);
+			if((notGettingBetter > 10 || tabuList.size() > maxTabuListSize) && tabuList.size() > 0) tabuList.remove(0);
 		}
 		return bestSol;
+	}
+	
+	@Override
+	protected int[] calcularAssignacions(double[][] af, double[][] distancies) throws Exception {
+		N = af.length;
+		FLOW = af;
+		DIST = distancies;
+		if(numSearches <= 0 || numIterations <= 0 || maxTabuListSize <= 0) throw new Exception("Tabu Config Error");
+		checkInputMatrices();
+		double bestCost = 1 << 15;
+		int[] best = new int[N];
+		for(int i = 0; i < numSearches; ++i) {
+			int[] current = search();
+			double currCost = cost(current);
+			if(currCost < bestCost) {
+				bestCost = currCost;
+				best = current;
+			}
+		}
+		return best;
 	}
 }
