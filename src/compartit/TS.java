@@ -8,7 +8,7 @@ import java.util.Random;
  * @author Dani Torramilans
  */
 public class TS extends SolucionadorQAP {
-	public class Swap {
+	private class Swap {
 		public int x;
 		public int y;
 		public Swap(int a, int b) {
