@@ -33,10 +33,10 @@ public class TS extends SolucionadorQAP {
         super(afinitats, distancies);
     }
 	
-	public int numIterations = 50;
-	public int maxTabuListSize = 1000;
-	public int numSearches = 1000;
-	public Random random = new Random();
+	private int numIterations = 50;
+	private int maxTabuListSize = 1000;
+	private int numSearches = 1000;
+	private Random random = new Random();
 	private int N;
 	private double[][] FLOW;
 	private double[][] DIST;
@@ -167,5 +167,29 @@ public class TS extends SolucionadorQAP {
 			}
 		}
 		return best;
+	}
+
+	public int getNumIterations() {
+		return numIterations;
+	}
+
+	public void setNumIterations(int numIterations) {
+		this.numIterations = numIterations;
+	}
+
+	public int getMaxTabuListSize() {
+		return maxTabuListSize;
+	}
+
+	public void setMaxTabuListSize(int maxTabuListSize) {
+		this.maxTabuListSize = maxTabuListSize;
+	}
+
+	public int getNumSearches() {
+		return numSearches;
+	}
+
+	public void setNumSearches(int numSearches) {
+		this.numSearches = numSearches;
 	}
 }
