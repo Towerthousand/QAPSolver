@@ -38,7 +38,7 @@ public class BB extends SolucionadorQAP{
         int[] v = new int[assign.length];
         for (int i = 0; i<v.length; ++i) v[i] = -1;
         PriorityQueue<Node> s = new PriorityQueue<>();
-        s.add(new Node(init_qap, v, 0));
+        s.add(new Node(init_qap, v));
         while(s.size() != 0){
             Node n = s.poll();
             if(n.fita < cost){
@@ -99,7 +99,7 @@ public class BB extends SolucionadorQAP{
     private static Branch branching(Node n)
 //    protected static Branch weakBranching(Node n)
     {
-        return coreBranching(n, n.C);
+        return coreBranching(n, n.qap.cost);
     }
     
 //    protected static Branch strongBranching(Node n)
@@ -153,20 +153,16 @@ public class BB extends SolucionadorQAP{
     protected static class Node implements Comparable<Node>{
         public QAP qap;
         public double fita;
-        public double[][] C;
         public int[] currassign;
-        public double shift;
         
         public int size()
         {
             return qap.size();
         }
-        public Node(QAP q, int[] v, double extracost){
+        public Node(QAP q, int[] v){
             qap = q;
             currassign = v;
-            shift = extracost;
-            fita = GLB.calcularFita(this.qap.freq, this.qap.dist) + extracost;
-            C = GLB.lawler.clone();
+            fita = GLB.calcularFita(this.qap.freq, this.qap.dist, this.qap.cost) + this.qap.shift;
         }
         
         @Override
@@ -183,12 +179,12 @@ public class BB extends SolucionadorQAP{
             if (b.isRowBranch)
                 for(int i=0; i<qap.size(); ++i){
                     res[i] = new Node(qap.reduced(b.index,i), 
-                            newAssign(currassign,b.index,i), shift + C[b.index][i]);
+                            newAssign(currassign,b.index,i));
                 }
             else
                 for(int i=0; i<qap.size(); ++i){
                     res[i] = new Node(qap.reduced(i,b.index), 
-                            newAssign(currassign,i,b.index), shift + C[i][b.index]);
+                            newAssign(currassign,i,b.index));
                 }
             return res;
         }
@@ -242,11 +238,33 @@ public class BB extends SolucionadorQAP{
     protected static class QAP{
         public double[][] dist;
         public double[][] freq;
+        //cost[i][j] cost of assigning object i to place j
+        public double[][] cost;
+        //cost so-far
+        public double shift;
         
         public QAP(double[][] distances, double[][] freqs)
         {
+        	dist = distances;
+            freq = freqs;
+            cost = new double[dist.length][dist.length];
+            shift = 0;
+        }
+        
+        public QAP(double[][] distances, double[][] freqs, double[][] costs, double shifts)
+        {
             dist = distances;
             freq = freqs;
+            cost = costs;
+            shift = shifts;
+        }
+        
+        public QAP(QAP q)
+        {
+        	dist = q.dist;
+        	freq = q.freq;
+        	cost = q.cost;
+        	shift = q.shift;
         }
         
         public int size()
@@ -267,9 +285,19 @@ public class BB extends SolucionadorQAP{
         
         public QAP reduced(int i, int j)
         {
-            double[][] d = reduce(dist,i,j);
-            double[][] f = reduce(freq,i,j);
-            return new QAP(d,f);
+            double[][] d = reduce(dist,j,j);
+            double[][] f = reduce(freq,i,i);
+            double[][] c = reduce(cost,i,j);
+            
+            for (int k = 0; k<size(); ++k){
+            	for (int l = 0; l<size(); ++l){
+            		c[k][l] += d[j][l]*f[i][k];
+            	}
+            }
+            
+            double s = shift + cost[i][j];
+            
+            return new QAP(d,f,c,s);
         }
         
         private double[][] reduce(double[][] m, int i, int j)
