@@ -17,16 +17,17 @@ public class GLB {
     public static double[][] lawler;
 
     
-    /**
+     /**
      * 
      * @param af
      * @param dist
+     * @param c
      * @return 
      */
     
-    public static double calcularFita(double[][] af, double[][] dist) {
+    public static double calcularFita(double[][] af, double[][] dist, double[][] c) {
         // Aplicar lawler per calcular matriu de costos
-        calcularMatriuLawler(af, dist);
+        calcularMatriuLawler(af, dist, c);
         return algoritmeHungar(lawler);
     }
     
@@ -34,12 +35,14 @@ public class GLB {
      * 
      * Retorna la matriu de costos de gilmore-lawler aplicant l'algoritme de 
      * gilmore-lawler per un problema Koopmans-Beckman QAP(A,B,C) on A 
-     * és la matriu d'afinitats(af), B la matriu de distancies(dist) i C és 0 i
+     * és la matriu d'afinitats(af), B la matriu de distancies(dist) i C la 
+     * matriu de costos(c)
      * 
      * @param af
      * @param dist
+     * @param c
      */
-    private static void calcularMatriuLawler(double[][] af, double[][] dist) {
+    private static void calcularMatriuLawler(double[][] af, double[][] dist, double[][] c) {
         int n = af[0].length;   //dist té el mateix tamany que af i les dues
                                 // matrius són quadrades
         lawler = new double[n][n];
@@ -59,7 +62,7 @@ public class GLB {
             Arrays.sort(distj[i],Collections.reverseOrder());
 
         }
-        // Lawler_ij = A_ii * B_jj
+        // Lawler_ij = A_ii * B_jj + C_ij
         // afi es calcula a continuacio
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < i; j++) {
@@ -72,7 +75,7 @@ public class GLB {
             for (int j = 0; j < n; j++) {
                 double l_ij = af[i][i] * dist[j][j];
                 for (int k = 0; k < n - 1; k++) {
-                    l_ij += afi[k] * distj[j][k];
+                    l_ij += afi[k] * distj[j][k] + c[i][j];
                 }
                 lawler[i][j] = l_ij;
             }
