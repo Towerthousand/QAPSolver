@@ -21,7 +21,8 @@ public class DriverBB {
         try{
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String line;
-            while ( (line = br.readLine()) != null){
+            boolean quit = false;
+            while ( (line = br.readLine()) != null && !quit){
                 String[] com = line.split(" ");
                 switch(com[0]){
                     case "CalcularAssignacions" :
@@ -102,7 +103,7 @@ public class DriverBB {
                         else{
                             int[] v = new int[q.size()];
                             for (int i = 0; i<v.length; ++i) v[i] = -1;
-                            n = new BB.Node(q, v, 0);
+                            n = new BB.Node(q, v);
                         }
                         System.out.println("Nodo creado!");
                         break;
@@ -163,8 +164,8 @@ public class DriverBB {
                                     + " ver su matriz de costes");
                         }
                         else{
-                            for(int i=0; i<n.C.length; i++){
-                                System.out.println(Arrays.toString(n.C[i]));
+                            for(int i=0; i<n.qap.cost.length; i++){
+                                System.out.println(Arrays.toString(n.qap.cost[i]));
                             }
                         }
                         break;
@@ -305,6 +306,11 @@ public class DriverBB {
                             System.out.println("Fila "+com[1]+" i columna "+com[2]+" eliminades.");                           
                         }
                         break;
+                    }
+                    case "quit":
+                    {
+                        quit = true;
+                        System.out.println("Adiós!");
                     }
                     default:
                     {

@@ -162,7 +162,7 @@ public class BB extends SolucionadorQAP{
         public Node(QAP q, int[] v){
             qap = q;
             currassign = v;
-            fita = GLB.calcularFita(this.qap.freq, this.qap.dist, this.qap.cost) + this.qap.shift;
+            fita = GLB.calcularFita(this.qap.freq, this.qap.dist, new double[size()][size()]) + this.qap.shift;
         }
         
         @Override
@@ -289,9 +289,12 @@ public class BB extends SolucionadorQAP{
             double[][] f = reduce(freq,i,i);
             double[][] c = reduce(cost,i,j);
             
-            for (int k = 0; k<size(); ++k){
-            	for (int l = 0; l<size(); ++l){
-            		c[k][l] += d[j][l]*f[i][k];
+            for (int k = 0; k<d.length; ++k){
+            	for (int l = 0; l<d.length; ++l){
+            		c[k][l] += 
+                                2
+                                * dist[l < j ? l : l + 1][j]
+                                * freq[i][k < i ? k : k + 1];
             	}
             }
             
