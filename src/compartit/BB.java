@@ -12,6 +12,7 @@ public class BB extends SolucionadorQAP{
     //problema inicial
     private QAP init_qap;
     
+    //creadores per retro-compatibilitat
     public BB(CalcularAfinitats a, CalcularDistancies d)
     {
         super(a, d);
@@ -31,19 +32,24 @@ public class BB extends SolucionadorQAP{
     @Override
     public int[] calcularAssignacions(double[][] afinitats, double[][] distancies)
     {
+        //inicialization
         init_qap = new QAP(distancies, afinitats);
-        int[] assign = new int[afinitats.length]; //results
+        //variables for best-so-far storing
+        //we start assigning the solucion v[i]=i and its cost as best-so-far
+        int[] assign = new int[afinitats.length];
         for (int i= 0; i<assign.length; ++i) assign[i] = i;
-        double cost = init_qap.costOf(assign); //results.objective
+        double cost = init_qap.costOf(assign); 
+        //first node
         int[] v = new int[assign.length];
         for (int i = 0; i<v.length; ++i) v[i] = -1;
+        //insertion of first node in queue
         PriorityQueue<Node> s = new PriorityQueue<>();
         s.add(new Node(init_qap, v));
         while(s.size() != 0){
             Node n = s.poll();
             if(n.fita < cost){
+                //if subproblem is small enough (dim < 4) backtrack it
                 if (n.isAlmostSolved()){
-                    //System.out.println("im in " + cost + " "+ n.hashCode());
                     int[][] whatsleft = n.whatsLeft();
                     ArrayList<int[]> ss = permutations(whatsleft[1]);
                     for(int[] p : ss){
@@ -96,8 +102,9 @@ public class BB extends SolucionadorQAP{
         arr[j] = tmp;
     }
    
-    private static Branch branching(Node n)
-//    protected static Branch weakBranching(Node n)
+    //Retorna la decisio de com seguir l'arbre:
+    //(fixant un lloc o un objecte i quin)
+    private Branch branching(Node n)
     {
         return coreBranching(n, n.qap.cost);
     }
@@ -119,7 +126,7 @@ public class BB extends SolucionadorQAP{
     * @param n Node actual de l'espai de solucions.
     * @return Branca per la que es seguirà.
     */
-   private static Branch coreBranching(Node n, double[][] CostMatrix)
+   private Branch coreBranching(Node n, double[][] CostMatrix)
    {
        double[] rowSum = new double[CostMatrix.length];
        double[] colSum = new double[CostMatrix.length];
@@ -150,10 +157,10 @@ public class BB extends SolucionadorQAP{
        } 
    }
     
-    protected static class Node implements Comparable<Node>{
-        public QAP qap;
-        public double fita;
-        public int[] currassign;
+    protected class Node implements Comparable<Node>{
+        protected QAP qap;
+        protected double fita;
+        protected int[] currassign;
         
         public int size()
         {
@@ -235,89 +242,9 @@ public class BB extends SolucionadorQAP{
         }
     }
     
-    protected static class QAP{
-        public double[][] dist;
-        public double[][] freq;
-        //cost[i][j] cost of assigning object i to place j
-        public double[][] cost;
-        //cost so-far
-        public double shift;
-        
-        public QAP(double[][] distances, double[][] freqs)
-        {
-        	dist = distances;
-            freq = freqs;
-            cost = new double[dist.length][dist.length];
-            shift = 0;
-        }
-        
-        public QAP(double[][] distances, double[][] freqs, double[][] costs, double shifts)
-        {
-            dist = distances;
-            freq = freqs;
-            cost = costs;
-            shift = shifts;
-        }
-        
-        public QAP(QAP q)
-        {
-        	dist = q.dist;
-        	freq = q.freq;
-        	cost = q.cost;
-        	shift = q.shift;
-        }
-        
-        public int size()
-        {
-            return dist.length;
-        }
-        
-        public double costOf(int[] pos)
-        {
-            double res = 0;
-            for (int i = 0; i<dist.length; i++){
-                for (int j = 0; j<dist.length; j++){
-                    res+=freq[i][j]*dist[pos[i]][pos[j]];
-                }
-            }
-            return res;
-        }
-        
-        public QAP reduced(int i, int j)
-        {
-            double[][] d = reduce(dist,j,j);
-            double[][] f = reduce(freq,i,i);
-            double[][] c = reduce(cost,i,j);
-            
-            for (int k = 0; k<d.length; ++k){
-            	for (int l = 0; l<d.length; ++l){
-            		c[k][l] += 
-                                2
-                                * dist[l < j ? l : l + 1][j]
-                                * freq[i][k < i ? k : k + 1];
-            	}
-            }
-            
-            double s = shift + cost[i][j];
-            
-            return new QAP(d,f,c,s);
-        }
-        
-        private double[][] reduce(double[][] m, int i, int j)
-        {
-            double[][] res = new double[m.length-1][m.length-1];
-            for(int ii = 0; ii<res.length; ii++){
-                for(int jj = 0; jj<res[ii].length; jj++){
-                    res[ii][jj] = m[ii < i ? ii : ii + 1][jj < j ? jj : jj + 1];
-                }
-            }
-            return res;
-        }
-    }
-    
-    protected static class Branch{
-        public Boolean isRowBranch;
-        public int index;
+   protected class Branch{
+        protected Boolean isRowBranch;
+        protected int index;
         public Branch(Boolean b, int i)
         {
             isRowBranch = b;
