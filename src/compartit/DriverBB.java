@@ -82,6 +82,7 @@ public class DriverBB {
                         }
                         bb = new BB(q.freq, q.dist);
                         System.out.println("Clase BB instanciada.");
+                        break;
                     }
                     case "solve":
                     {
@@ -92,10 +93,11 @@ public class DriverBB {
                         else{
                             int[] x = bb.calcularAssignacions(aff,dist);
                             System.out.println("El resultat es: ");
-                            System.out.println(x.toString());
+                            System.out.println(Arrays.toString(x));
                             System.out.println("El cost associat es: ");
                             System.out.println(q.costOf(x));
                         }
+                        break;  
                     }
                     case "quit":
                     {
