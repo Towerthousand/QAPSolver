@@ -42,7 +42,7 @@ public class DriverGLB {
                 aff = new double[dim][dim];
                 dist = new double[dim][dim];
                 cost = new double[dim][dim];
-                //llegeix primera matriu (A/afinitats)
+                //llegeix primera matriu (A/fluxos)
                 br2.readLine();
                 for(int i = 0; i<dim; ++i){
                     String[] x = br2.readLine().split(" ");
@@ -53,7 +53,7 @@ public class DriverGLB {
                         k++;
                     }
                 }
-                System.out.println("Matriu A (afinitats):");
+                System.out.println("Matriu A (fluxos):");
                 printMatrix(aff);
                 //llegeix la segona matriu (B/distancies)
                 br2.readLine();
