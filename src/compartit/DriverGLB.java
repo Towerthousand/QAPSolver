@@ -88,7 +88,7 @@ public class DriverGLB {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.print("Introdueix el nom d'un fitxer del joc de prova o bé escriu 'q' per sortir: ");
+            System.out.print("Introdueix 'q' per sortir o qualsevol altre cosa per continuar: ");
             exit = (entrada.readLine().equals("q"));
         }
     }
