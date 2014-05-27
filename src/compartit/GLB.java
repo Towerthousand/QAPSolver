@@ -35,7 +35,7 @@ public class GLB {
      * 
      * Retorna la matriu de costos de gilmore-lawler aplicant l'algoritme de 
      * gilmore-lawler per un problema Koopmans-Beckman QAP(A,B,C) on A 
-     * és la matriu d'afinitats(af), B la matriu de distancies(dist) i C la 
+     * és la matriu de fluxes(af), B la matriu de distancies(dist) i C la 
      * matriu de costos(c)
      * 
      * @param af
