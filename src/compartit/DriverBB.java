@@ -65,7 +65,7 @@ public class DriverBB {
                             }
                             System.out.println("Matriz distancias leida.");
                             
-                            q = new QAP(aff,dist);
+                            q = new QAP(dist,aff);
                             
                         } catch (IOException e){
                             System.out.println("No se encuentra el archivo.\n"
@@ -102,7 +102,35 @@ public class DriverBB {
                     case "quit":
                     {
                         quit = true;
-                        System.out.println("Adiós!");
+                        System.out.println("Adiós!\n <press ENTER to exit>");
+                        break;
+                    }
+                    case "costOf":
+                    {
+                        if (q==null)
+                            System.out.println("Cal llegir un cas!\n"
+                                    + "Fes: readQAP");
+                        else if (com.length != q.size()+1)
+                            System.out.println("Nombre d'arguments erroni.");
+                        else{
+                            int[] x = new int[q.size()];
+                            for (int i = 0; i<q.size(); ++i) x[i]=Integer.parseInt(com[i+1]);
+                            double b = q.costOf(x);
+                            System.out.println("El cost de l'assignacio és: "+b);
+                        }
+                        break;
+                    }
+                    case "showQAP":
+                    {
+                        if (q==null)
+                            System.out.println("Cal llegir un cas!\n"
+                                    + "Fes: readQAP");
+                        System.out.println("Mida del problema actual: "+q.size());
+                        System.out.println("\nMatriu Fluxos: ");
+                        for(int i=0; i<q.size(); ++i) System.out.println(Arrays.toString(q.freq[i]));
+                        System.out.println("\nMatriu Distancies: ");
+                        for(int i=0; i<q.size(); ++i) System.out.println(Arrays.toString(q.dist[i]));
+                        break;
                     }
                     default:
                     {

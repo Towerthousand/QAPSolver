@@ -1,5 +1,4 @@
 package compartit;
-import java.util.*;
 
 /**
  * Helper class for BB.
