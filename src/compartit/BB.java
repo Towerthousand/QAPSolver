@@ -175,9 +175,9 @@ public class BB extends SolucionadorQAP{
         @Override
         public int compareTo(Node n)
         {
-            if (this.fita > n.fita) return 1;
+            if (this.fita > n.fita) return -1;
             else if (this.fita == n.fita) return 0;
-            else return -1;
+            else return 1;
         }
         public Node[] branch()
         { 
